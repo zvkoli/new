@@ -1,12 +1,15 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { PulseLoader } from "react-spinners";
 import CustomField from "../../components/module/CustomField";
+import { Button } from "antd";
 // import axios from "axios";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 // import Cookies from "js-cookie";
+import { useMutation } from "react-query";
+import { postRequest } from "../../services/apiService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +23,21 @@ const Login = () => {
   //   }
   // }, []);
 
+  const mutation = useMutation((data) => postRequest("/login", data), {
+    onSuccess: (data) => {
+      console.log(data);
+      // setTimeout(() => {
+      //   navigate("/");
+      // }, 5000);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
+      setSubmitPending(false);
+    },
+  });
+
   const initialValues = {
     email: "",
     password: "",
@@ -28,28 +46,30 @@ const Login = () => {
   const validateLogin = (values) => {
     const errors = {};
 
-    // if (!values.email) {
-    //   errors.email = t("login.email_required");
-    // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-    //   errors.email = t("login.invalid_email");
-    // }
-
-    // if (!values.password) {
-    //   errors.password = t("login.password_required");
-    // } else if (values.password.length < 8) {
-    //   errors.password = t("login.password_min_length");
-    // } else if (/[\s]/.test(values.password)) {
-    //   errors.password = t("login.password_no_space");
-    // } else if (/[^A-Za-z0-9+=_)(*&^%$#@!><?/"'-×]/g.test(values.password)) {
-    //   errors.password = t("login.password_invalid_chars");
-    // }
+    if (!values.email) {
+      errors.email = "Email is required";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+      errors.email = "Invalid email format";
+    }
+    
+    if (!values.password) {
+      errors.password = "Password is required";
+    } else if (values.password.length < 8) {
+      errors.password = "Password must be at least 8 characters long";
+    } else if (/[\s]/.test(values.password)) {
+      errors.password = "Password cannot contain spaces";
+    } else if (/[^A-Za-z0-9+=_)(*&^%$#@!><?/"'-×]/g.test(values.password)) {
+      errors.password = "Password contains invalid characters";
+    }
+    
 
     return errors;
   };
 
   const onSubmit = async (values) => {
     console.log(values);
-    // setSubmitPending(true);
+    setSubmitPending(true);
+    mutation.mutate(values);
     // try {
     //   const res = await axios.post(
     //     `${process.env.REACT_APP_BASE_URL}${process.env.REACT_APP_LOGIN}`,
@@ -104,10 +124,10 @@ const Login = () => {
   return (
     <div
       style={{ direction: "ltr" }}
-      className="w-full h-screen flex flex-col items-center justify-center bg-[#FFC057] font-iranyekan max-sm:px-5"
+      className="w-full h-screen flex flex-col items-center justify-center bg-[#F3F4F6] font-Poppins max-sm:px-5"
     >
-      <div className="w-1/2 h-auto flex flex-col items-center justify-center rounded-xl gap-7 bg-white shadow py-14 max-lg:w-8/12 max-md:w-10/12 max-sm:w-full">
-        <h1 className="text-2xl">{"Login"}</h1>
+      <div className="w-1/2 h-auto flex flex-col items-center justify-center rounded-xl gap-7 py-14 max-lg:w-8/12 max-md:w-10/12 max-sm:w-full">
+        <h1 className="text-2xl font-semibold uppercase">{"Login"}</h1>
         <Formik
           initialValues={initialValues}
           validate={validateLogin}
@@ -115,9 +135,9 @@ const Login = () => {
         >
           <Form className="w-10/12 flex flex-col justify-center items-start gap-2">
             <CustomField id={"email"} name={"email"} placeholder={"Email"} />
-            <div className="w-full flex items-center rounded-lg bg-gray-200">
+            <div className="w-full flex items-center rounded-lg border-2 border-gray-200">
               <Field
-                className="w-full p-3 bg-transparent outline-none text-[0.90rem] max-sm:text-[0.80rem]"
+                className="w-full p-3 rounded-lg outline-none text-[0.90rem] max-sm:text-[0.80rem]"
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
@@ -126,7 +146,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="p-3 focus:outline-none"
+                className="p-3 bg-white rounded-lg focus:outline-none"
               >
                 {showPassword ? (
                   <VscEyeClosed size={20} />
@@ -149,16 +169,26 @@ const Login = () => {
             </div>
 
             <div className="w-full h-auto flex flex-row justify-center items-center pt-5">
-              <button
+              {/* <button
                 type="submit"
-                className="w-1/2 flex flex-row justify-center items-center text-black p-3 rounded-lg bg-[#FFC057] shadow"
+                className="w-1/2 flex flex-row justify-center items-center text-white p-3 rounded-lg bg-blue-600 shadow"
               >
                 {submitPending ? (
-                  <PulseLoader size={10} color="#000" className="py-[5px]" />
+                  <PulseLoader size={10} color="#fff" className="py-[5px]" />
                 ) : (
                   "Submit"
                 )}
-              </button>
+              </button> */}
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={submitPending}
+                className="w-1/2 h-auto flex flex-row justify-center items-center p-2 font-Poppins uppercase"
+              >
+                Submit
+              </Button>
+
             </div>
           </Form>
         </Formik>
