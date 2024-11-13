@@ -14,8 +14,8 @@
   @font-face {
     font-family: "Poppins";
     font-weight: 600;
-    src: url("../src/assets/font/Poppins-SemiBoldItalic.ttf") format("ttf"),
-      url("../src/assets/font/Poppins-SemiBoldItalic.woff") format("woff");
+    src: url("../src/assets/font/Poppins-SemiBold.ttf") format("ttf"),
+      url("../src/assets/font/Poppins-SemiBold.woff") format("woff");
     font-display: swap;
   }
 }

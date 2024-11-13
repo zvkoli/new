@@ -2,7 +2,6 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import { PulseLoader } from "react-spinners";
 import CustomField from "../../components/module/CustomField";
 import { Button } from "antd";
 // import axios from "axios";
